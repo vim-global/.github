@@ -1,8 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vim-global/.github/main/profile/assets/vim-global-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/vim-global/.github/main/profile/assets/vim-global-light.svg">
-  <img alt="Vim Global" src="https://raw.githubusercontent.com/vim-global/.github/main/profile/assets/vim-global-light.svg" width="320">
-</picture>
+<img alt="Vim Global" src="https://raw.githubusercontent.com/vim-global/.github/main/profile/assets/vim-global.svg" width="320">
 
 # Vim Global
 
