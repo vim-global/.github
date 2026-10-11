@@ -6,7 +6,7 @@
 
 Modular infrastructure for branded digital environments that connect people, businesses, content, commerce, and analytics.
 
-[Visit vim.global](https://vim.global) · [Contact our team](mailto:office@vim.global)
+[Visit vim.global](https://vim.global) · [vim.marketing](https://vim.marketing) · [Contact our team](mailto:office@vim.global)
 
 ## About Vim Global
 
@@ -65,6 +65,7 @@ This GitHub profile introduces our work. Product implementation and operational 
 ## Contact
 
 **Website:** [vim.global](https://vim.global)  
+**Marketing:** [vim.marketing](https://vim.marketing)  
 **Email:** [office@vim.global](mailto:office@vim.global)
 
 For partnerships, product discussions, and technology collaboration, contact our team.
