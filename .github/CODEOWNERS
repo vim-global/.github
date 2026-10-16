@@ -1,0 +1,3 @@
+# Code owner for all files in the organization profile repository.
+# Mandatory approval is controlled separately by branch protection or rulesets.
+* @VimGlobal
