@@ -69,3 +69,7 @@ This GitHub profile introduces our work. Product implementation and operational 
 **Email:** [office@vim.global](mailto:office@vim.global)
 
 For partnerships, product discussions, and technology collaboration, contact our team.
+
+## Code Ownership
+
+**Andrei Anikiy** (individual; GitHub: [@VimGlobal](https://github.com/VimGlobal)) is the declared economic copyright holder of original project code owned by him. Repository hosting does not itself transfer these rights to Vim Global sp. z o.o. Third-party rights and licenses remain applicable. See the [code ownership notice](../OWNERSHIP.md) in RU, PL and EN.
