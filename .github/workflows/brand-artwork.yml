@@ -1,0 +1,15 @@
+name: Approved profile artwork
+on:
+  push:
+    paths: ['profile/assets/**', 'tools/build-profile-logo.py', '.github/workflows/brand-artwork.yml']
+  pull_request:
+    paths: ['profile/assets/**', 'tools/build-profile-logo.py', '.github/workflows/brand-artwork.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python3 tools/build-profile-logo.py
+      - run: git diff --exit-code -- profile/assets/vim-global.svg
