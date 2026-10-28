@@ -1,4 +1,4 @@
-<img alt="Vim Global" src="https://raw.githubusercontent.com/vim-global/.github/main/profile/assets/vim-global.svg" width="320">
+<img alt="Vim Global" src="https://raw.githubusercontent.com/vim-global/.github/main/profile/assets/vim-global.svg?v=global-energy-20261028" width="320">
 
 # Vim Global
 
