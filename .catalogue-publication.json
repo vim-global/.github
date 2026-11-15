@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "publishers": {
+    "tools/build-profile-logo.py": {
+      "status": "guarded",
+      "phase": "build",
+      "entry_kind": "cli",
+      "reason": "Existing visual artifact builder; exact approved source/reference and independent pre-creation receipt required before rebuilding. Existing output is preserved, not reinterpreted."
+    },
+    "tools/verify-profile-artwork.py": {
+      "status": "exempt",
+      "class": "read-only-approved-artifact-verification",
+      "entry_kind": "cli",
+      "reason": "Read-only hashes of two existing approved SVGs. No generation, write, network or publication; builder remains guarded. Evidence pins are not a new visual standard.",
+      "sha256": "1036a2b7125f36a4d9537a69356e5847effc46aa99cadf35117987eba04b1620",
+      "controller_review": {
+        "decision": "approved",
+        "review_id": "CPG-REVIEW-20261115-dotgithub-verify-1",
+        "reviewer": "Claude (independent source review)",
+        "source_sha256": "1036a2b7125f36a4d9537a69356e5847effc46aa99cadf35117987eba04b1620",
+        "classification_sha256": "5b8a312b77794e3fd118a43ebc5f12731172375b3a7fa9c6dcd167e7c5a562e8"
+      }
+    }
+  }
+}

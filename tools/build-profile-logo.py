@@ -1,4 +1,13 @@
 """Rebuild the existing public white presentation panel from the exact approved B2."""
+
+# VG-CATALOGUE-PUBLICATION-PREFLIGHT-1
+if __name__ == '__main__':
+    import pathlib as _vg_pathlib, runpy as _vg_runpy
+    _vg_root = next((_p for _p in _vg_pathlib.Path(__file__).resolve().parents if (_p / 'tools/catalogue-publication-gate/guard.py').is_file()), None)
+    if _vg_root is None:
+        raise SystemExit('CATALOGUE: shared publication preflight missing')
+    _vg_runpy.run_path(str(_vg_root / 'tools/catalogue-publication-gate/guard.py'))['entrypoint'](__file__, _vg_root)
+
 from pathlib import Path
 import hashlib,re
 root=Path(__file__).resolve().parents[1]
