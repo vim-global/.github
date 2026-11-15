@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "publishers": {
+    "tools/build-profile-logo.py": {
+      "status": "guarded",
+      "phase": "build",
+      "entry_kind": "cli",
+      "reason": "Existing visual artifact builder; exact approved source/reference and independent pre-creation receipt required before rebuilding. Existing output is preserved, not reinterpreted."
+    }
+  }
+}

@@ -1,0 +1,11 @@
+# Mandatory catalogue publication preflight
+
+One implementation in vg-infrastructure, byte-identical vendoring in consuming repositories. Existing web catalogue/passports remain the only visual standard. No new visual values are defined here.
+
+`guard.py` verifies registry-pinned receipt, exact source commit/tree scopes, compiled artifact scopes for publication, catalogue passport and phone proof, independent review of the complete receipt subject, and publication admission valid for at most 900 seconds. Missing, changed, expired and unknown inputs refuse. A build receipt does not authorize publication. Retired historical CLIs always refuse, with no override flag. Non-publication exemptions are exact-byte classifications requiring independent approval; non-UI deployments still need source/artifact/review/expiry evidence.
+
+Python guards precede all original imports/body except required docstring/future syntax. Node guard is the first synchronous dependency; no top-level await. Coverage checks exact first-statement wiring, not merely a marker comment. Tests use local synthetic source/artifacts and side-effect sentinels; they never invoke a real publisher body/network.
+
+Scope is the explicit registry at each reviewed source revision. A scanner finds candidate names and upload/write signatures; discovery is not proof of semantic completeness. Current exemption classifications are PENDING independent review and coverage intentionally refuses them. Other branches/worktrees and 172 inventoried pinned server copies are NOT automatically updated. Raw root/SSH/FTP/browser administration is outside this evidence guard, and is not made impossible by repository code. No access roles/keys, running services, live templates, account/card data or historical receipts are changed by these source integrations.
+
+Rollout requires per-repository source review, explicit classification approvals, supported-entry installation/readback and a separately controlled retirement transition for operational server copies. Protected merges require owner authorization; no automatic merge is performed. Until those gates finish, do not claim system-wide enforcement. Existing products keep running; this changes release entrypoints, not ordinary user-content actions through approved templates.
