@@ -78,6 +78,41 @@ class GateTests(unittest.TestCase):
         with self.assertRaisesRegex(g.Refused, 'build_is_not_publication_approval'):
             self.check()
 
+    def test_publisher_implementation_cannot_be_omitted_from_source_closure(self):
+        self.record['source_scopes'] = ['ui']
+        self.receipt['source_scopes'] = ['ui']
+        self.receipt['source_files'] = g.inventory(self.root, ['ui'])
+        self.refresh_receipt()
+        with self.assertRaisesRegex(g.Refused, 'publisher_source_required'):
+            self.check()
+
+    def test_required_recipe_or_runtime_dependency_cannot_be_omitted(self):
+        self.record['required_source_files'] = ['unreviewed-recipe']
+        with self.assertRaisesRegex(g.Refused, 'publisher_source_required'):
+            self.check()
+
+    def test_classification_conditions_cannot_be_changed_under_old_review(self):
+        digest = g.digest((self.root/'publisher.py').read_bytes())
+        row = {'status':'exempt','entry_kind':'library','reason':'synthetic runtime','requires_guarded_owner':True,'guarded_by':['builder.py'],'sha256':digest}
+        subject=g.digest(json.dumps(row,sort_keys=True,separators=(',',':')).encode())
+        row['controller_review']={'decision':'approved','review_id':'synthetic-independent','reviewer':'Controller','source_sha256':digest,'classification_sha256':subject}
+        self.registry['publishers']['publisher.py']=row
+        self.registry['publishers']['builder.py']={'status':'guarded','source_scopes':['publisher.py','builder.py']}
+        self.assertEqual(self.check()['scope'],'exempt-non-publication')
+        row.pop('requires_guarded_owner')
+        with self.assertRaisesRegex(g.Refused,'classification_changed'):
+            self.check()
+
+    def test_runtime_membership_requires_bound_guarded_producer(self):
+        digest=g.digest((self.root/'publisher.py').read_bytes())
+        row={'status':'exempt','reason':'synthetic runtime','requires_guarded_owner':True,'guarded_by':['builder.py'],'sha256':digest}
+        subject=g.digest(json.dumps(row,sort_keys=True,separators=(',',':')).encode())
+        row['controller_review']={'decision':'approved','review_id':'synthetic-independent','reviewer':'Controller','source_sha256':digest,'classification_sha256':subject}
+        self.registry['publishers']['publisher.py']=row
+        self.registry['publishers']['builder.py']={'status':'guarded','source_scopes':['builder.py']}
+        with self.assertRaisesRegex(g.Refused,'runtime_owner_scope_required'):
+            self.check()
+
     def test_unknown_publisher(self):
         with self.assertRaisesRegex(g.Refused, 'publisher_unmapped'):
             g.check(self.root, 'new.py', self.registry)
@@ -177,6 +212,8 @@ class GateTests(unittest.TestCase):
     def test_no_ui_exemption_bound_to_exact_reviewed_script(self):
         sha = g.digest((self.root / 'publisher.py').read_bytes())
         self.registry['publishers']['publisher.py'] = {'status': 'exempt', 'reason': 'Synthetic non-publication maintenance fixture', 'controller_review': {'decision': 'approved', 'review_id': 'fixture-review', 'reviewer': 'Independent fixture controller', 'source_sha256': sha}, 'sha256': sha}
+        row = self.registry['publishers']['publisher.py']
+        row['controller_review']['classification_sha256'] = g.digest(json.dumps({k:v for k,v in row.items()if k!='controller_review'},sort_keys=True,separators=(',',':')).encode())
         self.assertEqual(self.check()['scope'], 'exempt-non-publication')
         self.write('publisher.py', 'changed into page publisher')
         with self.assertRaisesRegex(g.Refused, 'no_ui_source_changed'):

@@ -1,15 +1,15 @@
 {
   "authority_repository": "vim-global/vg-infrastructure",
-  "source_commit": "079504a7fddfd3ffc62bfb138dd32609df644a91",
+  "source_commit": "955a19bcbce2052aa1dd821eba8074fc4b8b6e56",
   "source_directory": "tools/catalogue-publication-gate",
   "files": {
-    "guard.py": "811b1ba796392b3dc0a9b580c3e0710d86dd55397d398bbe11d84e0f22c43c59",
-    "coverage.py": "11a1bedddaa644ce8582b4f147cb0d81a8ae502383c0f551475e383b06a6aec2",
+    "guard.py": "20e37c1f3942ed9f6ea14f29b3e2db490f41bde8b739b3d3797b2ae9dd11f364",
+    "coverage.py": "d39667564a214b4207f0456404e561410f71e7a1759869972ad83da6b133e27f",
     "wire.py": "1523026115775f3fcdb6f2c0a99ae32ee6e4287d3a4957457c73c3ecc1fb6e63",
     "preflight.mjs": "6f21b2be5e68108c6df78949f97637bebae467761cc48230951e7ed9b796b799",
     "preflight.cjs": "667c92d66fb2a12b2d35084a8f673a8f0d89f826d67e04d8de5fd5f0f3d20baa",
-    "test_guard.py": "d511622c2abd71f1e836c89cef2228a3a912680db8e8eb4055557d99b8a0a9b8",
-    "test_wiring.py": "31360114135db47ab7ae7435004d8aa2ff8ddd9bcf7ceaf41582d431f69025a3",
+    "test_guard.py": "bfdca0508e11b22a4987df5ee7511d49e26bba29bfbe81e1af73161d502d835e",
+    "test_wiring.py": "536f6a97ed647cf928822667dc7fb919a6fc06cbcb74b0107d3b2cf11c178517",
     "transport.py": "e2abd0f8704cfcd8131a051a4385f0e065b01a5b6f06f028ecaf679681c18a94",
     "test_transport.py": "c919b961d03d6cfa8a446715587e6dd8dc107e73f58301267ded5a0e4ec2f1c9"
   }

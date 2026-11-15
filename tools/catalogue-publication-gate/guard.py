@@ -91,6 +91,8 @@ def verify_receipt(root, entry, record, artifact_root=None, ui=True):
     if receipt.get('source_scopes') != record['source_scopes']:
         raise Refused('catalogue_scope_changed')
     actual = inventory(root, record['source_scopes'])
+    if entry not in actual or any(name not in actual for name in record.get('required_source_files', [])):
+        raise Refused('catalogue_publisher_source_required')
     if actual != receipt.get('source_files'):
         raise Refused('catalogue_source_changed')
     # Independently reconstruct source commit scope, rather than trust a label.
@@ -145,6 +147,13 @@ def check(root, entry, registry, artifact_root=None):
         review = record.get('controller_review', {})
         if not isinstance(review, dict) or not record.get('reason') or review.get('decision') != 'approved' or not review.get('reviewer') or not review.get('review_id') or review.get('source_sha256') != record.get('sha256'):
             raise Refused('catalogue_no_ui_scope_unreviewed')
+        subject = digest(json.dumps({k: v for k, v in record.items() if k != 'controller_review'}, sort_keys=True, separators=(',', ':')).encode())
+        if review.get('classification_sha256') != subject:
+            raise Refused('catalogue_no_ui_classification_changed')
+        if record.get('requires_guarded_owner'):
+            owners = record.get('guarded_by', [])
+            if not owners or not all((registry['publishers'].get(owner, {}).get('status') in ['guarded', 'no-ui'] and any(entry == scope or entry.startswith(scope.rstrip('/') + '/') for scope in registry['publishers'][owner].get('source_scopes', []))) for owner in owners):
+                raise Refused('catalogue_runtime_owner_scope_required')
         if digest(safe_file(root, entry).read_bytes()) != record.get('sha256'):
             raise Refused('catalogue_no_ui_source_changed')
         return {'checked': True, 'publisher': entry, 'scope': 'exempt-non-publication'}

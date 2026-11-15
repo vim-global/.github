@@ -45,7 +45,9 @@ class WiringTests(unittest.TestCase):
         p.write_text('#!/bin/sh\nprintf "payload"\n')
         wire.wire(self.root, name)
         digest = hashlib.sha256(p.read_bytes()).hexdigest()
-        (self.root/'.catalogue-publication.json').write_text(json.dumps({'version':1,'publishers':{name:{'status':'exempt','reason':'synthetic output contract','sha256':digest,'controller_review':{'decision':'approved','review_id':'synthetic-independent','reviewer':'Controller','source_sha256':digest}}}}))
+        row={'status':'exempt','reason':'synthetic output contract','sha256':digest,'controller_review':{'decision':'approved','review_id':'synthetic-independent','reviewer':'Controller','source_sha256':digest}}
+        row['controller_review']['classification_sha256']=hashlib.sha256(json.dumps({k:v for k,v in row.items()if k!='controller_review'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        (self.root/'.catalogue-publication.json').write_text(json.dumps({'version':1,'publishers':{name:row}}))
         result = subprocess.run(['sh', str(p)], capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, b'payload')
@@ -95,6 +97,8 @@ class WiringTests(unittest.TestCase):
         self.assertTrue(coverage.wired_first(self.root, 'strict.cjs', path.read_text()))
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         registry = {'version': 1, 'publishers': {'strict.cjs': {'status': 'exempt', 'reason': 'Isolated non-publication strict-mode fixture', 'sha256': digest, 'controller_review': {'decision': 'approved', 'review_id': 'fixture', 'reviewer': 'Fixture controller', 'source_sha256': digest}}}}
+        for row in registry['publishers'].values():
+            if row['status']=='exempt': row['controller_review']['classification_sha256']=hashlib.sha256(json.dumps({k:v for k,v in row.items()if k!='controller_review'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
         (self.root / '.catalogue-publication.json').write_text(json.dumps(registry))
         result = subprocess.run(['node', str(path)], cwd=self.root, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -134,6 +138,33 @@ class WiringTests(unittest.TestCase):
         result = coverage.audit(self.root)
         self.assertFalse(result['checked'])
         self.assertIn('new-deploy.py:unmapped', result['failures'])
+
+    def test_docker_recipe_requires_exact_guarded_managed_builder(self):
+        recipe=self.root/'Dockerfile'
+        recipe.write_text('FROM scratch\n')
+        entry=self.root/'build.py'
+        entry.write_text('raise AssertionError("never execute builder in coverage")\n')
+        wire.wire(self.root,'build.py')
+        registry={'version':1,'publishers':{'Dockerfile':{'status':'guarded','phase':'build','entry_kind':'recipe','managed_entry':'build.py','manual_direct_build_outside_managed_scope':True,'recipe_sha256':hashlib.sha256(recipe.read_bytes()).hexdigest()},'build.py':{'status':'guarded','phase':'publish','source_scopes':['build.py','Dockerfile'],'required_source_files':['Dockerfile']}}}
+        (self.root/'.catalogue-publication.json').write_text(json.dumps(registry))
+        self.assertTrue(coverage.wired_first(self.root,'Dockerfile',recipe.read_text()))
+        recipe.write_text('FROM unreviewed\n')
+        self.assertFalse(coverage.wired_first(self.root,'Dockerfile',recipe.read_text()))
+
+    def test_package_build_requires_exact_prebuild_guard(self):
+        subprocess.run(['git','init','-q',str(self.root)],check=True)
+        entry=self.root/'build.mjs'
+        entry.write_text('throw Error("never execute builder in coverage");\n')
+        wire.wire(self.root,'build.mjs')
+        package={'scripts':{'build':'next build','prebuild':'node build.mjs'}}
+        p=self.root/'package.json';p.write_text(json.dumps(package))
+        registry={'version':1,'publishers':{'package.json':{'status':'guarded','phase':'build','entry_kind':'recipe','managed_entry':'build.mjs','recipe_sha256':hashlib.sha256(p.read_bytes()).hexdigest()},'build.mjs':{'status':'guarded','phase':'build','source_scopes':['package.json','build.mjs'],'required_source_files':['package.json']}}}
+        (self.root/'.catalogue-publication.json').write_text(json.dumps(registry))
+        subprocess.run(['git','-C',str(self.root),'add','package.json'],check=True)
+        self.assertIn('package.json',coverage.candidates(self.root))
+        self.assertTrue(coverage.wired_first(self.root,'package.json',p.read_text()))
+        package['scripts'].pop('prebuild');p.write_text(json.dumps(package))
+        self.assertFalse(coverage.wired_first(self.root,'package.json',p.read_text()))
 
     def test_filename_independent_upload_detection(self):
         subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
