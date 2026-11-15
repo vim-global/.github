@@ -110,6 +110,19 @@ class WiringTests(unittest.TestCase):
         self.assertTrue((self.root / 'release.mjs').read_text().startswith('#!/usr/bin/env node\n'))
         self.run_entry('release.mjs', ['node'])
 
+    def test_extensionless_shell_refuses_before_body(self):
+        name='publish-wrapper'
+        p=self.root/name
+        p.write_text('#!/usr/bin/env bash\ntouch side-effect\n')
+        wire.wire(self.root,name)
+        self.assertTrue(coverage.wired_first(self.root,name,p.read_text()))
+        self.run_entry(name,['bash'])
+
+    def test_extensionless_non_shell_not_guessed(self):
+        p=self.root/'publish-wrapper'
+        p.write_text('#!/usr/bin/env python3\nprint(1)\n')
+        with self.assertRaises(ValueError): wire.wire(self.root,'publish-wrapper')
+
     def test_shell_refuses_before_body(self):
         (self.root / 'release.sh').write_text('#!/bin/sh\ntouch side-effect\n')
         wire.wire(self.root, 'release.sh')

@@ -58,6 +58,11 @@ def node_parts(text):
     return text[:offset], text[offset:]
 
 
+def shell_entry(path, text):
+    first = text.splitlines()[0] if text else ''
+    return path.suffix == '.sh' or (not path.suffix and bool(re.fullmatch(r'#!(?:/usr/bin/env (?:bash|sh|zsh)|/(?:usr/)?bin/(?:bash|sh|zsh))', first)))
+
+
 def wire(root, name):
     path = root / name
     text = path.read_text()
@@ -69,7 +74,7 @@ def wire(root, name):
                 return False
             del lines[index:index + 2]
             text = ''.join(lines)
-        elif path.suffix == '.sh':
+        elif shell_entry(path, text):
             lines = text.splitlines(keepends=True)
             index = next((i for i,line in enumerate(lines[:8]) if line.strip() == '# VG-CATALOGUE-PUBLICATION-PREFLIGHT-1'), None)
             if index is None or index + 2 >= len(lines) or not lines[index + 1].startswith('_vg_root=') or 'catalogue-publication-gate/guard.py' not in lines[index + 2]:
@@ -95,7 +100,7 @@ def wire(root, name):
         statement = ('import ' + repr(relative + '?entry=' + quote(name, safe=''))) if esm else ('require(' + repr(relative) + ')(__filename)')
         header, body = node_parts(text)
         new = header + '// VG-CATALOGUE-PUBLICATION-PREFLIGHT-1\n' + statement + ';\n' + body
-    elif path.suffix == '.sh':
+    elif shell_entry(path, text):
         relative = os.path.relpath(root, path.parent).replace(os.sep, '/')
         preflight = '\n# VG-CATALOGUE-PUBLICATION-PREFLIGHT-1\n_vg_root="$(CDPATH= cd -- "$(dirname -- "$0")/' + relative + '" && pwd)" || exit 78\npython3 "$_vg_root/tools/catalogue-publication-gate/guard.py" --root "$_vg_root" --registry .catalogue-publication.json --entry ' + shlex.quote(name) + ' >/dev/null || exit 78\n\n'
         first, sep, rest = text.partition('\n')

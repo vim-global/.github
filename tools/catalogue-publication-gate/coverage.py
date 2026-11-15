@@ -69,7 +69,7 @@ def wired_first(root, name, text):
         lines = body.splitlines()
         wanted = ('import ' + repr(relative + '?entry=' + quote(name, safe=''))) if esm else ('require(' + repr(relative) + ')(__filename)')
         return bool(lines) and lines[0].strip() == wanted + ';'
-    if name.endswith('.sh'):
+    if runpy.run_path(str(Path(__file__).with_name('wire.py')))['shell_entry'](Path(name), text):
         source = text.splitlines()
         first = 1 if source and source[0].startswith('#!') else 0
         # Pure reconstruction, no execution or temporary filesystem write.
